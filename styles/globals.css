@@ -1,3 +1,11 @@
 body {
   background-color: #ebeffa;
 }
+
+h4{
+  margin: 0px;
+}
+
+label,input{
+  display: block;
+}

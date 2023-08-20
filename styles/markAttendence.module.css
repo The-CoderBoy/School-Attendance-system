@@ -1,6 +1,15 @@
+.topBar {
+  display: flex;
+  justify-content: space-between;
+  font-size: 20px;
+  padding-top: 5px;
+  padding-bottom: 10px;
+  border-bottom: solid 1px #52038f;
+}
+
 .mainBox {
   margin: auto;
-  margin-top: 10%;
+  margin-top: 5%;
   padding: 10px;
   width: 300px;
   border: solid #52038f 10px;
@@ -18,8 +27,14 @@
 
 .table {
   margin: auto;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: bold;
+  border-collapse: collapse;
+}
+
+.td {
+  border: solid 1px #52038f;
+  padding: 3px;
 }
 
 .present {
@@ -53,9 +68,22 @@
   background-color: #d73a01;
 }
 
-.person{
-    text-align: center;
-    color: rgb(66, 2, 101);
-    margin-top: 1%;
-    font-size: 150px;
+.person {
+  text-align: center;
+  color: rgb(66, 2, 101);
+  margin-top: 1%;
+  font-size: 150px;
+}
+
+.animation {
+  animation: zoom 0.5s ease-in-out;
+}
+
+@keyframes zoom {
+  0% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
