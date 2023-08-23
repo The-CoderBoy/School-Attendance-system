@@ -33,3 +33,7 @@
 .addBtn:focus{
     background-color: #9e4ddcef;
 }
+
+.astric{
+    color: red;
+}
