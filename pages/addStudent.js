@@ -1,7 +1,8 @@
 import styles from "@/styles/addStudent.module.css";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 function addStudents() {
+  const focus = useRef(null);
   const [data, setData] = useState({
     "Student Name": "",
     "Father Name": "",
@@ -11,6 +12,10 @@ function addStudents() {
     Class: "",
     "Contact No": "",
   });
+
+  useEffect(() => {
+    focus.current.focus();
+  }, []);
 
   const datahandler = (e) => {
     const name = e.target.name;
@@ -39,6 +44,7 @@ function addStudents() {
           type="text"
           name="Student Name"
           id="studentName"
+          ref={focus}
           value={data["Student Name"]}
           onChange={datahandler}
         />

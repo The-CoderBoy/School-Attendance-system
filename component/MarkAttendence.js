@@ -1,5 +1,5 @@
 import styled from "@/styles/markAttendence.module.css";
-import { BsPersonBoundingBox } from "react-icons/bs";
+import { BsPersonBoundingBox, BsList } from "react-icons/bs";
 import { useRef, useState } from "react";
 
 const date = new Date();
@@ -9,7 +9,7 @@ let month = date.getMonth() + 1;
 let year = date.getFullYear();
 let currentDate = `${day}-${month}-${year}`;
 
-function MarkAttendence() {
+function MarkAttendence({ list }) {
   const [tableContent, setTableContent] = useState([
     {
       key: "Roll No",
@@ -31,6 +31,10 @@ function MarkAttendence() {
       key: "Date Of Birth",
       value: "01-01-1999",
     },
+    {
+      key: "Status",
+      value: "P",
+    },
   ]);
   const [isAnimating, setIsAnimating] = useState(false);
   const pBtn = useRef(null);
@@ -46,11 +50,18 @@ function MarkAttendence() {
     }, 500);
   };
 
+  const listHandler = () => {
+    list();
+  };
+
   return (
     <>
       <div className={styled.topBar}>
         <h4>Class:- 10</h4>
         <h4>{currentDate}</h4>
+        <h4 onClick={listHandler}>
+          List <BsList style={{ marginBottom: "-3px", fontSize: "20px" }} />
+        </h4>
       </div>
       <div
         className={`${styled.mainBox} ${isAnimating ? styled.animation : ""} `}
@@ -63,9 +74,9 @@ function MarkAttendence() {
           <tbody>
             {tableContent.map((x, i) => {
               return (
-                <tr  key={i}>
-                  <td className={styled.td} >{x.key}</td>
-                  <td className={styled.td} >{x.value}</td>
+                <tr key={i}>
+                  <td className={styled.td}>{x.key}</td>
+                  <td className={styled.td}>{x.value}</td>
                 </tr>
               );
             })}
