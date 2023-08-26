@@ -1,0 +1,7 @@
+.table {
+    margin: auto;
+    background-color: rgb(255, 255, 255);
+    width: 330px;
+    padding: 5px;
+    box-shadow: inset 0px 0px 3px black;
+}
