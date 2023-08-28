@@ -77,6 +77,7 @@ function attendanceRecord() {
       </div>
     </>
   );
+  
 }
 
 export default attendanceRecord;

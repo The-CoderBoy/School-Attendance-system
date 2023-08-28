@@ -28,6 +28,12 @@ const Select = Styled.select`
     height: 25px;
     text-align: center;
     border-radius: 15px;
+    border: solid 1px #9102fe;
+    background-color: white;
+    &:focus {
+      border: solid 2px blueviolet;
+      box-shadow: 0px 0px 5px blueviolet;
+    }
 `;
 
 const apiData = [
