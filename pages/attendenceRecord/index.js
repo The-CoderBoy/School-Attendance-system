@@ -81,3 +81,13 @@ function attendanceRecord() {
 }
 
 export default attendanceRecord;
+
+export async function getServerSideProps(context) {
+  const { params, req, res, query } = context;
+  console.log(query);
+  return {
+    props: {
+      data: "hello",
+    },
+  };
+}
