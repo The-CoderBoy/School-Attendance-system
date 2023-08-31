@@ -4,13 +4,13 @@ import { useEffect, useRef, useState } from "react";
 function addStudents() {
   const focus = useRef(null);
   const [data, setData] = useState({
-    "Student Name": "",
-    "Father Name": "",
-    "Mother Name": "",
-    "Date Of Birth": "",
-    "Roll No": "",
-    Class: "",
-    "Contact No": "",
+    studentName: "",
+    fatherName: "",
+    motherName: "",
+    dateOfBirth: "",
+    rollNo: "",
+    className: "",
+    contactNo: "",
   });
 
   useEffect(() => {
@@ -20,7 +20,7 @@ function addStudents() {
   const datahandler = (e) => {
     const name = e.target.name;
     const value = e.target.value;
-    if (name === "Contact No") {
+    if (name === "contactNo") {
       value.length < 11 && value != "e"
         ? setData({ ...data, [name]: value })
         : void null;
@@ -29,8 +29,23 @@ function addStudents() {
     }
   };
 
-  const submit = () => {
-    console.log(data);
+  const submit = async () => {
+    if (
+      data.studentName != "" &&
+      data.dateOfBirth != "" &&
+      data.rollNo != "" &&
+      data.className != ""
+    ) {
+      const sendData = await fetch("/api/addStudent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      const res = await sendData.json();
+      console.log(res);
+    } else {
+      alert("Please Fill All Required Fields");
+    }
   };
 
   return (
@@ -42,28 +57,28 @@ function addStudents() {
         <input
           className={styles.input}
           type="text"
-          name="Student Name"
+          name="studentName"
           id="studentName"
           ref={focus}
-          value={data["Student Name"]}
+          value={data["studentName"]}
           onChange={datahandler}
         />
         <label htmlFor="fatherName">Father Name</label>
         <input
           className={styles.input}
           type="text"
-          name="Father Name"
+          name="fatherName"
           id="fatherName"
-          value={data["Father Name"]}
+          value={data["fatherName"]}
           onChange={datahandler}
         />
         <label htmlFor="motherName">Mother Name</label>
         <input
           className={styles.input}
           type="text"
-          name="Mother Name"
+          name="motherName"
           id="motherName"
-          value={data["Mother Name"]}
+          value={data["motherName"]}
           onChange={datahandler}
         />
         <label htmlFor="dateOfBirth">
@@ -72,9 +87,9 @@ function addStudents() {
         <input
           className={styles.input}
           type="date"
-          name="Date Of Birth"
+          name="dateOfBirth"
           id="dateOfBirth"
-          value={data["Date Of Birth"]}
+          value={data["dateOfBirth"]}
           onChange={datahandler}
         />
         <label htmlFor="rollNo">
@@ -83,9 +98,9 @@ function addStudents() {
         <input
           className={styles.input}
           type="text"
-          name="Roll No"
+          name="rollNo"
           id="rollNo"
-          value={data["Roll No"]}
+          value={data["rollNo"]}
           onChange={datahandler}
         />
         <label htmlFor="class">
@@ -93,19 +108,22 @@ function addStudents() {
         </label>
         <input
           className={styles.input}
-          type="text"
-          name="Class"
+          type="number"
+          name="className"
           id="class"
-          value={data["Class"]}
+          value={data["className"]}
           onChange={datahandler}
+          onKeyDown={(e) => {
+            e.keyCode === 69 || e.keyCode === 189 ? e.preventDefault() : "";
+          }}
         />
         <label htmlFor="contactNo">Contact No.</label>
         <input
           className={styles.input}
           type="number"
-          name="Contact No"
+          name="contactNo"
           id="contactNo"
-          value={data["Contact No"]}
+          value={data["contactNo"]}
           onChange={datahandler}
           onKeyDown={(e) => {
             e.keyCode === 69 || e.keyCode === 189 ? e.preventDefault() : "";
