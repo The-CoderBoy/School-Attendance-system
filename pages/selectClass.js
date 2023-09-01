@@ -1,6 +1,6 @@
 import style from "@/styles/addStudent.module.css";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const today = new Date();
 const year = today.getFullYear();
@@ -16,6 +16,15 @@ function viewAttendence() {
     class: "",
     date: formattedDate,
   });
+  const [opt, setOtp] = useState([]);
+
+  useEffect(() => {
+    (async () => {
+      const data = await fetch("/api/className");
+      const res = await data.json();
+      setOtp(res);
+    })();
+  }, []);
 
   const dataHandler = (e) => {
     const name = e.target.name;
@@ -36,9 +45,14 @@ function viewAttendence() {
           onChange={dataHandler}
           value={data.class}
         >
-          <option value="" key="">
-            10th
-          </option>
+          <option value=""></option>
+          {opt.map((x, i) => {
+            return (
+              <option value={x.className} key={i}>
+                {x.className}
+              </option>
+            );
+          })}
         </select>
         <label htmlFor="date">
           Select Date<span className={style.astric}>*</span>
@@ -54,9 +68,13 @@ function viewAttendence() {
         <button
           className={style.addBtn}
           onClick={() => {
-            router.push(
-              `/attendancePage?class=${data.class}&date=${data.date}`
-            );
+            if (data.class != "") {
+              router.push(
+                `/attendancePage?className=${data.class}&date=${data.date}`
+              );
+            }else{
+              alert("Select Class")
+            }
           }}
         >
           Take Attendence
@@ -67,5 +85,3 @@ function viewAttendence() {
 }
 
 export default viewAttendence;
-
-

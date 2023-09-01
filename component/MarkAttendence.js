@@ -9,7 +9,7 @@ let month = date.getMonth() + 1;
 let year = date.getFullYear();
 let currentDate = `${day}-${month}-${year}`;
 
-function MarkAttendence({ list }) {
+function MarkAttendence({ list, stuInfo, date, className }) {
   const [tableContent, setTableContent] = useState([
     {
       key: "Roll No",
@@ -57,8 +57,8 @@ function MarkAttendence({ list }) {
   return (
     <>
       <div className={styled.topBar}>
-        <h4>Class:- 10</h4>
-        <h4>{currentDate}</h4>
+        <h4>Class:- {className}</h4>
+        <h4>{date}</h4>
         <h4 onClick={listHandler}>
           List <BsList style={{ marginBottom: "-3px", fontSize: "20px" }} />
         </h4>

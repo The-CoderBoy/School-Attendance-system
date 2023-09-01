@@ -1,66 +1,14 @@
 import style from "@/styles/studentList.module.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BiArrowBack } from "react-icons/bi";
 
-function StudentLIst({ list }) {
-  const [data, setData] = useState([
-    {
-      studentName: "jeta lal pankaj lal gada ",
-      status: "P",
-    },
-    {
-      studentName: "Padtha",
-      status: "A",
-    },
-    {
-      studentName: "Sadtha",
-      status: "NA",
-    },
-    {
-      studentName: "Adtha",
-      status: "P",
-    },
-    {
-      studentName: "Padtha",
-      status: "A",
-    },
-    {
-      studentName: "Sadtha",
-      status: "NA",
-    },
-    {
-      studentName: "Adtha",
-      status: "P",
-    },
-    {
-      studentName: "Padtha",
-      status: "A",
-    },
-    {
-      studentName: "Sadtha",
-      status: "NA",
-    },
-    {
-      studentName: "Padtha",
-      status: "A",
-    },
-    {
-      studentName: "Sadtha",
-      status: "NA",
-    },
-    {
-      studentName: "Adtha",
-      status: "P",
-    },
-    {
-      studentName: "Padtha",
-      status: "A",
-    },
-    {
-      studentName: "Sadtha",
-      status: "NA",
-    },
-  ]);
+function StudentLIst({ list, stuInfo, date }) {
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    setData(stuInfo);
+    console.log(stuInfo)
+  }, [stuInfo]);
 
   const listHandler = () => {
     list();
@@ -83,12 +31,16 @@ function StudentLIst({ list }) {
                   className={
                     x.status === "P"
                       ? style.present
-                      : x.status === "A"
+                      : x.attendance === "A"
                       ? style.absent
                       : style.na
                   }
                 >
-                  {x.status === "P" ? "P" : x.status === "A" ? "A" : "NA"}
+                  {x.attendance === "P"
+                    ? "P"
+                    : x.attendance === "A"
+                    ? "A"
+                    : "NA"}
                 </div>
               </div>
             </div>

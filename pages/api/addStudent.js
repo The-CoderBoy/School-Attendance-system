@@ -1,19 +1,4 @@
 import { Client } from "pg";
-const client = new Client({
-  user: "postgres",
-  host: "localhost",
-  database: "studentManagementSystem",
-  password: "admin",
-  port: 5432,
-});
-
-client.connect(function (err) {
-  if (err) {
-    throw err;
-  } else {
-    console.log("connected");
-  }
-});
 
 export default async (req, res) => {
   const {
@@ -25,13 +10,30 @@ export default async (req, res) => {
     className,
     contactNo,
   } = req.body;
-  console.log(req.body)
-  const data = await client.query(`INSERT INTO 
-  studentInfo ("studentName","fatherName","motherName","dateOfBirth","rollNo","className","contactNo") 
-  VALUES 
-  ('${studentName}','${fatherName}','${motherName}','${dateOfBirth}','${rollNo}',${className},${contactNo})`);
-  console.log(data.rows);
-  res.statusCode = 200;
-  res.setHeader("Content-Type", "application/json");
-  res.end(JSON.stringify("Hello"));
+
+  const client = new Client({
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    database: process.env.DB_DATABASE,
+    password: process.env.DB_PASSWORD,
+    port: process.env.DB_PORT,
+  });
+  try {
+    await client.connect();
+    const data = await client.query(`INSERT INTO 
+      studentInfo ("studentName","fatherName","motherName","dateOfBirth","rollNo","className","contactNo") 
+      VALUES 
+      ('${studentName}','${fatherName}','${motherName}','${dateOfBirth}','${rollNo}',${className},${
+      contactNo === "" ? 0 : contactNo
+    })`);
+    await client.end();
+    res.statusCode = 200;
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify({ saved: true }));
+  } catch {
+    await client.end();
+    res.statusCode = 200;
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify({ saved: false }));
+  }
 };

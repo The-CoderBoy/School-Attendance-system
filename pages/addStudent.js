@@ -1,5 +1,6 @@
 import styles from "@/styles/addStudent.module.css";
 import { useEffect, useRef, useState } from "react";
+import Message from "@/component/Message";
 
 function addStudents() {
   const focus = useRef(null);
@@ -12,6 +13,8 @@ function addStudents() {
     className: "",
     contactNo: "",
   });
+  const [msg, setMsg] = useState(false);
+  const [status, setStatus] = useState(true);
 
   useEffect(() => {
     focus.current.focus();
@@ -42,14 +45,25 @@ function addStudents() {
         body: JSON.stringify(data),
       });
       const res = await sendData.json();
+      setMsg(true)
       console.log(res);
+      if (res.saved) {
+        if (!status) setStatus(true);
+      } else {
+        setStatus(false);
+      }
     } else {
       alert("Please Fill All Required Fields");
     }
   };
 
+  const msgHandler = () => {
+    setMsg(!msg);
+  };
+
   return (
     <>
+      {msg && <Message hide={msgHandler} color={status} />}
       <div className={styles.card}>
         <label htmlFor="studentName">
           Student Name <span className={styles.astric}>*</span>
