@@ -2,17 +2,27 @@ import style from "@/styles/studentList.module.css";
 import { useEffect, useState } from "react";
 import { BiArrowBack } from "react-icons/bi";
 
-function StudentLIst({ list, stuInfo, date }) {
+function StudentLIst({ list, date, className }) {
   const [data, setData] = useState([]);
-
-  useEffect(() => {
-    setData(stuInfo);
-    console.log(stuInfo)
-  }, [stuInfo]);
 
   const listHandler = () => {
     list();
   };
+
+  useEffect(() => {
+    if (date !== "" && className !== "") {
+      (async () => {
+        const api = await fetch("/api/studentList", {
+          method: "POST",
+          "Content-Type": "application/json",
+          body: JSON.stringify({ date, className }),
+        });
+        const apiData = await api.json();
+        setData(apiData);
+      })();
+    }
+  }, [date, className]);
+
   return (
     <>
       <div>
@@ -26,10 +36,10 @@ function StudentLIst({ list, stuInfo, date }) {
                 {x.studentName}
               </h3>
               <div style={{ textAlign: "center" }}>
-                <span>Status</span>
+                <span>Attendance</span>
                 <div
                   className={
-                    x.status === "P"
+                    x.attendance === "P"
                       ? style.present
                       : x.attendance === "A"
                       ? style.absent
