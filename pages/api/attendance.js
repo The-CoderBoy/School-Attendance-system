@@ -1,8 +1,8 @@
 import { Client } from "pg";
 
 export default async (req, res) => {
-  const { attendance, date, rollNo } = JSON.parse(req.body);
-  console.log(attendance, date, rollNo);
+  const { attendance, date, rollNo, stuIndex } = JSON.parse(req.body);
+  console.log(stuIndex);
   const client = new Client({
     user: process.env.DB_USER,
     host: process.env.DB_HOST,
@@ -12,9 +12,15 @@ export default async (req, res) => {
   });
   try {
     await client.connect();
-    const data = await client.query(`insert into
+    if (typeof stuIndex === "number") {
+      const data = await client.query(`update attendance 
+      set "attendance"='${attendance}' 
+      where "rollNo"='${rollNo}' and "date"='${date}'`);
+    } else {
+      const data = await client.query(`insert into
         attendance ("rollNo","date","attendance")
         values ('${rollNo}','${date}','${attendance}')`);
+    }
     await client.end();
     res.statusCode = 200;
     res.setHeader("Content-Type", "application/json");

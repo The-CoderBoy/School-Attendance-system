@@ -10,6 +10,7 @@ function index() {
     className: "",
     date: "",
   });
+  const [stuIndex, setStuIndex] = useState("");
   const router = useRouter();
   const sListHandler = () => {
     setSList(!sList);
@@ -21,6 +22,11 @@ function index() {
     }
   }, [router]);
 
+  const selectStuIndex = (x) => {
+    setSList(false)
+    setStuIndex(x);
+  };
+
   return (
     <div>
       {!sList ? (
@@ -28,12 +34,15 @@ function index() {
           list={sListHandler}
           date={parameter.date}
           className={parameter.className}
+          stuIndex={stuIndex}
+          selectStuIndex={selectStuIndex}
         />
       ) : (
         <StudentList
           list={sListHandler}
           date={parameter.date}
           className={parameter.className}
+          selectStuIndex={selectStuIndex}
         />
       )}
     </div>

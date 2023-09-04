@@ -9,7 +9,7 @@ let month = date.getMonth() + 1;
 let year = date.getFullYear();
 let currentDate = `${day}-${month}-${year}`;
 
-function MarkAttendence({ list, date, className }) {
+function MarkAttendence({ list, date, className, stuIndex, selectStuIndex }) {
   const [tableContent, setTableContent] = useState([]);
   const [stdName, setStbName] = useState("");
   const [isAnimating, setIsAnimating] = useState(false);
@@ -23,7 +23,6 @@ function MarkAttendence({ list, date, className }) {
 
   const handleAnimationClick = () => {
     setIsAnimating(true);
-
     setTimeout(() => {
       setIsAnimating(false);
       aBtn.current?.blur();
@@ -33,6 +32,41 @@ function MarkAttendence({ list, date, className }) {
 
   const listHandler = () => {
     list();
+  };
+
+  const selectStudent = (apiData, stuIndex) => {
+    setTableContent([
+      {
+        key: "Roll No",
+        value: apiData[stuIndex].rollNo,
+      },
+      {
+        key: "Father Name",
+        value: apiData[stuIndex].fatherName,
+      },
+      {
+        key: "Mother Name",
+        value: apiData[stuIndex].motherName,
+      },
+      {
+        key: "Contact No",
+        value: apiData[stuIndex].contactNo,
+      },
+      {
+        key: "Date Of Birth",
+        value: apiData[stuIndex].dateOfBirth
+          .slice(0, 10)
+          .split("-")
+          .reverse()
+          .join("-"),
+      },
+      {
+        key: "Attendance",
+        value: apiData[stuIndex].attendance,
+      },
+    ]);
+    setStuNo({ no: +stuIndex + 1, total: apiData.length });
+    setStbName(apiData[stuIndex].studentName);
   };
 
   useEffect(() => {
@@ -45,48 +79,56 @@ function MarkAttendence({ list, date, className }) {
         });
         const apiData = await api.json();
 
-        for (let x = 0; x < apiData.length; x++) {
-          if (!apiData[x].attendance) {
-            setTableContent([
-              {
-                key: "Roll No",
-                value: apiData[x].rollNo,
-              },
-              {
-                key: "Father Name",
-                value: apiData[x].fatherName,
-              },
-              {
-                key: "Mother Name",
-                value: apiData[x].motherName,
-              },
-              {
-                key: "Contact No",
-                value: apiData[x].contactNo,
-              },
-              {
-                key: "Date Of Birth",
-                value: apiData[x].dateOfBirth
-                  .slice(0, 10)
-                  .split("-")
-                  .reverse()
-                  .join("-"),
-              },
-              {
-                key: "Status",
-                value: apiData[x].attendance,
-              },
-            ]);
-            setStuNo({ no: +x + 1, total: apiData.length });
-            setStbName(apiData[x].studentName);
-            return;
-          } else {
-            setTableContent([]);
+        if (typeof stuIndex === "number") {
+          selectStudent(apiData, stuIndex);
+        } else {
+          for (let x = 0; x < apiData.length; x++) {
+            if (!apiData[x].attendance) {
+              setTableContent([
+                {
+                  key: "Roll No",
+                  value: apiData[x].rollNo,
+                },
+                {
+                  key: "Father Name",
+                  value: apiData[x].fatherName,
+                },
+                {
+                  key: "Mother Name",
+                  value: apiData[x].motherName,
+                },
+                {
+                  key: "Contact No",
+                  value: apiData[x].contactNo,
+                },
+                {
+                  key: "Date Of Birth",
+                  value: apiData[x].dateOfBirth
+                    .slice(0, 10)
+                    .split("-")
+                    .reverse()
+                    .join("-"),
+                },
+                {
+                  key: "Attendance",
+                  value: apiData[x].attendance,
+                },
+              ]);
+              setStuNo({ no: +x + 1, total: apiData.length });
+              setStbName(apiData[x].studentName);
+              return;
+            } else {
+              setTableContent([]);
+              setStuNo({
+                no: "",
+                total: "",
+              });
+            }
           }
         }
       })();
     }
-  }, [date, className, newStu]);
+  }, [date, className, newStu, stuIndex]);
 
   const attendance = async (a) => {
     const api = await fetch("/api/attendance", {
@@ -96,12 +138,17 @@ function MarkAttendence({ list, date, className }) {
         attendance: a,
         date,
         rollNo: tableContent[0]?.value,
+        stuIndex,
       }),
     });
     const apiData = await api.json();
     if (apiData.saved) {
       handleAnimationClick();
-      setNewStu(!newStu);
+      if (typeof stuIndex === "number") {
+        selectStuIndex("");
+      } else {
+        setNewStu(!newStu);
+      }
     } else {
       alert("Error: something went to wrong ");
     }

@@ -2,7 +2,7 @@ import style from "@/styles/studentList.module.css";
 import { useEffect, useState } from "react";
 import { BiArrowBack } from "react-icons/bi";
 
-function StudentLIst({ list, date, className }) {
+function StudentLIst({ list, date, className, selectStuIndex }) {
   const [data, setData] = useState([]);
 
   const listHandler = () => {
@@ -45,6 +45,9 @@ function StudentLIst({ list, date, className }) {
                       ? style.absent
                       : style.na
                   }
+                  onClick={() => {
+                    selectStuIndex(i);
+                  }}
                 >
                   {x.attendance === "P"
                     ? "P"
