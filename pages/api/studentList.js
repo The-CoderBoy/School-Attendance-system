@@ -13,9 +13,11 @@ export default async (req, res) => {
   try {
     await client.connect();
     const data = await client.query(
-      `select * from studentInfo
-      left join attendance on studentInfo."rollNo" = attendance."rollNo"
-      where studentInfo."className"=${className} or attendance."date"='${date}'  order by studentInfo."studentName" asc`
+      `SELECT * FROM studentInfo
+      LEFT JOIN ( SELECT * FROM attendance WHERE date = '${date}') attendance
+      ON studentInfo."rollNo" = attendance."rollNo"
+      WHERE studentInfo."className" = ${className}
+      order by studentInfo."studentName" asc`
     );
     await client.end();
     res.status(200).json(data.rows);

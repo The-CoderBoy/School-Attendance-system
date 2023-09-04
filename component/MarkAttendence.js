@@ -13,6 +13,11 @@ function MarkAttendence({ list, date, className }) {
   const [tableContent, setTableContent] = useState([]);
   const [stdName, setStbName] = useState("");
   const [isAnimating, setIsAnimating] = useState(false);
+  const [stuNo, setStuNo] = useState({
+    no: "",
+    total: "",
+  });
+  const [newStu, setNewStu] = useState(true);
   const pBtn = useRef(null);
   const aBtn = useRef(null);
 
@@ -21,8 +26,8 @@ function MarkAttendence({ list, date, className }) {
 
     setTimeout(() => {
       setIsAnimating(false);
-      aBtn.current.blur();
-      pBtn.current.blur();
+      aBtn.current?.blur();
+      pBtn.current?.blur();
     }, 500);
   };
 
@@ -42,7 +47,6 @@ function MarkAttendence({ list, date, className }) {
 
         for (let x = 0; x < apiData.length; x++) {
           if (!apiData[x].attendance) {
-            console.log(apiData[x]);
             setTableContent([
               {
                 key: "Roll No",
@@ -73,59 +77,92 @@ function MarkAttendence({ list, date, className }) {
                 value: apiData[x].attendance,
               },
             ]);
+            setStuNo({ no: +x + 1, total: apiData.length });
             setStbName(apiData[x].studentName);
             return;
+          } else {
+            setTableContent([]);
           }
         }
       })();
     }
-  }, [date, className]);
+  }, [date, className, newStu]);
+
+  const attendance = async (a) => {
+    const api = await fetch("/api/attendance", {
+      method: "POST",
+      "Content-Type": "application/json",
+      body: JSON.stringify({
+        attendance: a,
+        date,
+        rollNo: tableContent[0]?.value,
+      }),
+    });
+    const apiData = await api.json();
+    if (apiData.saved) {
+      handleAnimationClick();
+      setNewStu(!newStu);
+    } else {
+      alert("Error: something went to wrong ");
+    }
+  };
 
   return (
     <>
       <div className={styled.topBar}>
         <h4>Class:- {className}</h4>
-        <h4>{date}</h4>
+        <h4>{date.split("-").reverse().join("-")}</h4>
         <h4 onClick={listHandler}>
           List <BsList style={{ marginBottom: "-3px", fontSize: "20px" }} />
         </h4>
       </div>
-      <div
-        className={`${styled.mainBox} ${isAnimating ? styled.animation : ""} `}
-      >
-        {/* <div className={styled.person}>
-          <BsPersonBoundingBox />
-        </div> */}
-        <p className={styled.name}>{stdName}</p>
-        <table className={styled.table}>
-          <tbody>
-            {tableContent.map((x, i) => {
-              return (
-                <tr key={i}>
-                  <td className={styled.td}>{x.key}</td>
-                  <td className={styled.td}>{x.value}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+      <div className={styled.topBar}>
+        <h4>Student No: {stuNo.no}</h4>
+        <h4>Total Students: {stuNo.total}</h4>
       </div>
-      <div style={{ textAlign: "center", marginTop: "5%" }}>
-        <button
-          onClick={handleAnimationClick}
-          className={styled.present}
-          ref={pBtn}
-        >
-          Present
-        </button>
-        <button
-          onClick={handleAnimationClick}
-          className={styled.absent}
-          ref={aBtn}
-        >
-          Absent
-        </button>
-      </div>
+      {tableContent.length === 0 ? (
+        <div style={{ textAlign: "center", marginTop: "50px" }}>
+          <h2>No More Student Left</h2>
+        </div>
+      ) : (
+        <div>
+          <div
+            className={`${styled.mainBox} ${
+              isAnimating ? styled.animation : ""
+            } `}
+          >
+            <p className={styled.name}>{stdName}</p>
+            <table className={styled.table}>
+              <tbody>
+                {tableContent.map((x, i) => {
+                  return (
+                    <tr key={i}>
+                      <td className={styled.td}>{x.key}</td>
+                      <td className={styled.td}>{x.value}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          <div style={{ textAlign: "center", marginTop: "5%" }}>
+            <button
+              onClick={() => attendance("P")}
+              className={styled.present}
+              ref={pBtn}
+            >
+              Present
+            </button>
+            <button
+              onClick={() => attendance("A")}
+              className={styled.absent}
+              ref={aBtn}
+            >
+              Absent
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 }
