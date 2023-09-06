@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import Styled from "styled-components";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { Doughnut } from "react-chartjs-2";
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 const Table = Styled.table`
     margin: auto;
@@ -36,22 +39,20 @@ const Select = Styled.select`
     }
 `;
 
-const apiData = [
-  {
-    date: "2023-8-1",
-    status: "P",
-  },
-  {
-    date: "2023-8-2",
-    status: "P",
-  },
-  {
-    date: "2023-8-3",
-    status: "A",
-  },
-];
+const Btn = Styled.button`
+color: white;
+font-size: 13px;
+background-color: blueviolet;
+border: solid 1px black;
+border-radius: 15px;
+width: 70px;
+height: 25px;
+margin-top: 17px;
+margin-left: 10px;
+`;
 
-function AttendanceTable() {
+function AttendanceTable({ rollNo }) {
+  console.log("child")
   const [days, setDays] = useState([
     "MON",
     "TUE",
@@ -75,8 +76,21 @@ function AttendanceTable() {
     "November",
     "December",
   ]);
+  const [apiData, setApiData] = useState([]);
   const [data, setData] = useState([]);
   const [dates, setDates] = useState([]);
+  const [year, setYear] = useState([]);
+  const [timeData, setTimeData] = useState({
+    month:
+      (new Date().getMonth() + 1).toString().length < 2
+        ? `0${new Date().getMonth() + 1}`
+        : new Date().getMonth() + 1,
+    year: new Date().getFullYear(),
+  });
+  const [countPA, setCountPA] = useState({
+    p: "",
+    a: "",
+  });
 
   const noDays = () => {
     const date = new Date();
@@ -92,16 +106,47 @@ function AttendanceTable() {
     return new Date(year, month, 1).getDay();
   };
 
-  useEffect(() => {
+  const timeDataHandler = (e) => {
+    const name = e.target.name;
+    const value = e.target.value;
+    setTimeData({ ...timeData, [name]: value });
+  };
+
+  const fetchData = async () => {
+    
+    const dateFrom = `${timeData.year}-${timeData.month}-01`;
+    const dateTo = `${timeData.year}-${timeData.month}-${noDays()}`;
+
+    const sendData = await fetch("/api/attendanceData", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ rollNo, dateFrom, dateTo }),
+    });
+    const res = await sendData.json();
+    res.forEach((e) => {
+      setApiData((pre) => {
+        let newArrary = [...pre];
+        newArrary.push({
+          date: e.newDate,
+          status: e.attendance,
+        });
+        return newArrary;
+      });
+    });
+  };
+
+  const createDates = () => {
     const start = day();
     const stop = noDays();
+    let loop = 5;
+    if (start > 5) loop = 6;
     let daysArray = [];
     let no = 1;
     let count = 1;
-    for (let x = 0; x < 5; x++) {
+    for (let x = 0; x < loop; x++) {
       let dayArray = [];
       for (let y = 0; y < 7; y++) {
-        if (count >= start && count <= stop + 1) {
+        if (count >= start && no <= stop) {
           dayArray.push(no);
           no += 1;
           count += 1;
@@ -118,10 +163,10 @@ function AttendanceTable() {
     let sNo = 1;
     let sCount = 1;
 
-    for (let x = 0; x < 5; x++) {
+    for (let x = 0; x < loop; x++) {
       let subArray = [];
       for (let y = 0; y < 7; y++) {
-        if (sCount >= start && sCount <= stop + 1) {
+        if (sCount >= start && sNo <= stop) {
           let cheker = true;
           for (let z = 0; z < apiData.length; z++) {
             if (+apiData[z].date.split("-")[2] === +sNo) {
@@ -140,10 +185,56 @@ function AttendanceTable() {
       statusArray.push(subArray);
     }
     setData(statusArray);
+  };
+
+  useEffect(() => {
+    const currentYear = new Date().getFullYear();
+    let years = [currentYear];
+    for (let x = 1; x < 11; x++) {
+      years.push(+currentYear - +x);
+    }
+    setYear(years);
+    if (rollNo) {
+      fetchData();
+    }
   }, []);
+
+  useEffect(() => {
+    createDates();
+
+    let p = 0;
+    let a = 0;
+
+    for (let x = 0; x < apiData.length; x++) {
+      if (apiData[x].status === "P") {
+        p += 1;
+      } else if (apiData[x].status === "A") {
+        a += 1;
+      }
+    }
+
+    setCountPA({ p, a });
+  }, [apiData]);
+
+  const checkHandler = () => {
+    setApiData([]);
+    fetchData();
+  };
 
   return (
     <>
+      <table style={{ margin: "auto" }}>
+        <tbody>
+          <tr>
+            <td>Presents:-</td>
+            <td>{countPA.p}</td>
+            <td>Absents:-</td>
+            <td>{countPA.a}</td>
+          </tr>
+        </tbody>
+      </table>
+      <hr />
+
       <div
         style={{
           display: "flex",
@@ -153,16 +244,8 @@ function AttendanceTable() {
       >
         <div>
           <label>Select Year</label>
-          <Select>
-            <option value="2022">2022</option>
-            <option value="2023">2023</option>
-            <option value="2024">2024</option>
-          </Select>
-        </div>
-        <div style={{ marginLeft: "10px" }}>
-          <label>Select month</label>
-          <Select>
-            {months.map((x, i) => {
+          <Select name="year" value={timeData.year} onChange={timeDataHandler}>
+            {year.map((x, i) => {
               return (
                 <option value={x} key={i}>
                   {x}
@@ -171,9 +254,29 @@ function AttendanceTable() {
             })}
           </Select>
         </div>
+        <div style={{ marginLeft: "10px" }}>
+          <label>Select month</label>
+          <Select
+            name="month"
+            value={timeData.month}
+            onChange={timeDataHandler}
+          >
+            {months.map((x, i) => {
+              return (
+                <option
+                  value={(+i + 1).toString().length < 2 ? `0${+i + 1}` : +i + 1}
+                  key={i}
+                >
+                  {x}
+                </option>
+              );
+            })}
+          </Select>
+        </div>
+        <Btn onClick={checkHandler}>Check</Btn>
       </div>
-
       <hr />
+
       <Table>
         <thead>
           <tr>
@@ -209,6 +312,23 @@ function AttendanceTable() {
           })}
         </tbody>
       </Table>
+
+      <div style={{ width: "300px", margin: "auto" }}>
+        <Doughnut
+          data={{
+            labels: ["Present", "Absent", "NA"],
+            datasets: [
+              {
+                label: "Attendance",
+                data: [countPA.p, countPA.a, noDays()],
+                backgroundColor: ["#02c436", "#cc0404", "#ccc8cc"],
+                borderColor: ["#02c436", "#cc0404", "#ccc8cc"],
+                borderWidth: 1,
+              },
+            ],
+          }}
+        />
+      </div>
     </>
   );
 }

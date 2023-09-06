@@ -4,8 +4,7 @@ import { useState } from "react";
 
 function viewAttendence() {
   const [data, setData] = useState({
-    "Stendent Name": "",
-    "Roll No": "",
+    rollNo: "",
   });
   const router = useRouter();
 
@@ -18,17 +17,6 @@ function viewAttendence() {
   return (
     <>
       <div className={style.card}>
-        <label htmlFor="studentName">
-          Student Name <span className={style.astric}>*</span>
-        </label>
-        <input
-          className={style.input}
-          type="text"
-          id="studentName"
-          name="Stendent Name"
-          value={data["Stendent Name"]}
-          onChange={dataHandler}
-        />
         <label htmlFor="rollNo">
           Roll No. <span className={style.astric}>*</span>
         </label>
@@ -36,14 +24,14 @@ function viewAttendence() {
           className={style.input}
           type="text"
           id="rollNo"
-          name="Roll No"
-          value={data["Roll No"]}
+          name="rollNo"
+          value={data["rollNo"]}
           onChange={dataHandler}
         />
         <button
           onClick={() => {
             router.push(
-              `/attendenceRecord?Stendent Name=${data["Stendent Name"]}&Roll No=${data["Roll No"]}`
+              `/attendenceRecord?rollNo=${data["rollNo"]}`
             );
           }}
           className={style.addBtn}

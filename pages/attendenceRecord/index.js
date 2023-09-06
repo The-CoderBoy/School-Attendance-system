@@ -1,50 +1,61 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AttendanceTable from "@/component/AttendanceTable";
 import style from "@/styles/attendanceRecord.module.css";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-import { Doughnut } from "react-chartjs-2";
-ChartJS.register(ArcElement, Tooltip, Legend);
+
+import { useRouter } from "next/router";
 
 function attendanceRecord() {
-  const [studentInfo, setStudentInfo] = useState([
-    {
-      key: "Student Name",
-      value: "Honey singh",
-    },
-    {
-      key: "Roll No",
-      value: "64643544",
-    },
-    {
-      key: "Father Name",
-      value: "yo yo singh",
-    },
-    {
-      key: "Mother Name",
-      value: "po po singh",
-    },
-    {
-      key: "Date of Birth",
-      value: "1-5-1997",
-    },
-    {
-      key: "Contact No",
-      value: "9874563210",
-    },
-  ]);
+  const router = useRouter();
+  const { rollNo } = router.query;
+  useEffect(() => {
+    (async () => {
+      if (rollNo) {
+        const sendData = await fetch("/api/studentInfo", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ rollNo }),
+        });
+        const res = await sendData.json();
+        setStudentInfo([
+          {
+            key: "Student Name",
+            value: res[0].studentName,
+          },
+          {
+            key: "Roll No",
+            value: res[0].rollNo,
+          },
+          {
+            key: "Class",
+            value: res[0].className,
+          },
+          {
+            key: "Father Name",
+            value: res[0].fatherName,
+          },
+          {
+            key: "Mother Name",
+            value: res[0].motherName,
+          },
+          {
+            key: "Date of Birth",
+            value: res[0].dateOfBirth
+              .slice(0, 10)
+              .split("-")
+              .reverse()
+              .join("-"),
+          },
+          {
+            key: "Contact No",
+            value: res[0].contactNo === "0" ? "" : res[0].contactNo,
+          },
+        ]);
+      }
+    })();
+  }, []);
+  const [studentInfo, setStudentInfo] = useState([]);
 
-  const data = {
-    labels: ["Present", "Absent", "NA"],
-    datasets: [
-      {
-        label: "Attendance",
-        data: [2, 1, 27],
-        backgroundColor: ["#02c436", "#cc0404", "#ccc8cc"],
-        borderColor: ["#02c436", "#cc0404", "#ccc8cc"],
-        borderWidth: 1,
-      },
-    ],
-  };
+  console.log("parent");
   return (
     <>
       <table className={style.table}>
@@ -60,34 +71,10 @@ function attendanceRecord() {
         </tbody>
       </table>
       <hr />
-      <table style={{margin:"auto"}}>
-        <tbody>
-          <tr>
-            <td>Presents:-</td>
-            <td>2</td>
-            <td>Absents:-</td>
-            <td>1</td>
-          </tr>
-        </tbody>
-      </table>
-      <hr />
-      <AttendanceTable />
-      <div style={{ width: "300px", margin: "auto" }}>
-        <Doughnut data={data} />
-      </div>
+      <AttendanceTable rollNo={rollNo} />
+   
     </>
   );
-  
 }
 
 export default attendanceRecord;
-
-export async function getServerSideProps(context) {
-  const { params, req, res, query } = context;
-  console.log(query);
-  return {
-    props: {
-      data: "hello",
-    },
-  };
-}

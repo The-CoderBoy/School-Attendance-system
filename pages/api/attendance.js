@@ -1,8 +1,10 @@
 import { Client } from "pg";
 
 export default async (req, res) => {
-  const { attendance, date, rollNo, stuIndex } = JSON.parse(req.body);
-  console.log(stuIndex);
+  const { attendance, date, rollNo, stuIndex, preAttendance } = JSON.parse(
+    req.body
+  );
+  console.log(req.body);
   const client = new Client({
     user: process.env.DB_USER,
     host: process.env.DB_HOST,
@@ -12,7 +14,7 @@ export default async (req, res) => {
   });
   try {
     await client.connect();
-    if (typeof stuIndex === "number") {
+    if (typeof stuIndex === "number" && preAttendance != null) {
       const data = await client.query(`update attendance 
       set "attendance"='${attendance}' 
       where "rollNo"='${rollNo}' and "date"='${date}'`);

@@ -139,6 +139,7 @@ function MarkAttendence({ list, date, className, stuIndex, selectStuIndex }) {
         date,
         rollNo: tableContent[0]?.value,
         stuIndex,
+        preAttendance: tableContent[5]?.value,
       }),
     });
     const apiData = await api.json();
