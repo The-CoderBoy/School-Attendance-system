@@ -45,10 +45,19 @@ function addStudents() {
         body: JSON.stringify(data),
       });
       const res = await sendData.json();
-      setMsg(true)
+      setMsg(true);
       console.log(res);
       if (res.saved) {
         if (!status) setStatus(true);
+        setData({
+          studentName: "",
+          fatherName: "",
+          motherName: "",
+          dateOfBirth: "",
+          rollNo: "",
+          className: "",
+          contactNo: "",
+        });
       } else {
         setStatus(false);
       }

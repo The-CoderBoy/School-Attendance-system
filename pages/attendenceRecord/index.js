@@ -52,10 +52,9 @@ function attendanceRecord() {
         ]);
       }
     })();
-  }, []);
+  }, [rollNo]);
   const [studentInfo, setStudentInfo] = useState([]);
 
-  console.log("parent");
   return (
     <>
       <table className={style.table}>
@@ -72,7 +71,6 @@ function attendanceRecord() {
       </table>
       <hr />
       <AttendanceTable rollNo={rollNo} />
-   
     </>
   );
 }

@@ -197,7 +197,7 @@ function AttendanceTable({ rollNo }) {
     if (rollNo) {
       fetchData();
     }
-  }, []);
+  }, [rollNo]);
 
   useEffect(() => {
     createDates();
