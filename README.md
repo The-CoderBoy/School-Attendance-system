@@ -12,10 +12,13 @@ Hi, This web app is used to take, view and manage attendance of students
 ![Alt text](Dashboard.PNG)\
 **Take Attendance**\
 selectClass > attendancePage > StudentList\
-![Alt text](<Select Class.PNG>)\ ![Alt text](<Attendance Page.PNG>)\ ![Alt text](<List of students.PNG>)\
+![Alt text](<Select Class.PNG>)\
+![Alt text](<Attendance Page.PNG>)\
+![Alt text](<List of students.PNG>)\
 **View Attendance**\
 viewAttendence > attendenceRecord\
-![Alt text](<choose student.PNG>)\ ![Alt text](<Attendance Record.PNG>)\
+![Alt text](<choose student.PNG>)\
+![Alt text](<Attendance Record.PNG>)\
 **Add Student**\
 ![Alt text](<Add Student.PNG>)
 
